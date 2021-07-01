@@ -1,0 +1,329 @@
+general: &default
+  # param:
+    # value: <value, value in general should match definition in argparse>
+    # description: " <long description, should be identical argparse>
+    # short_format: <format string>
+    # type: <int, float, string, bool>
+    # optional:
+    #     required: True # if the argument is needed
+    #     multiple: True # if multiple arguments are allowed
+    #     dest: <name> # mapping from argument name to config name, used for legacy support
+
+
+  IDs:
+    description: "Unique identifiers which describe the subdirectories in the root log dir to identify this run."
+    value: ["Dummy"]
+    short_format: "id%s"
+    type: "string"
+    required: True
+    multiple: True
+
+  datasets_root:
+    description: "root directory of all datasets, The root MUST be defined the / at the end"
+    short_fomat: "root%s"
+    type: "string"
+    value: "/data-ssd/data/pipeline-finished/"
+
+  annotation_root:
+    description: "toot for all annotations"
+    short_fomat: "root-anno%s"
+    type: "string"
+    value: "/data1/annotation-server/app/static/import/annotations"
+
+  # dataset parameters
+  dataset:
+    description: "Select the dataset, which should be used for the clustering. This dataset determines the expected ground-truth number of classes and data path. If you want to insert new dataset you have to add these in the file main.py. Allowed datasets are [VOC-sl, SYN, SHG, SYN-simple, SYN-easy, STL10, electro, SYN-full, SYN-var, VOC-c ,cifar10, cifar20]"
+    value: "None"
+    short_format: "data-%s"
+    type: "string"
+    required: True
+
+  unlabeled_data:
+    description: "Defines if unlabeled data should be added to the training data. Allowed datasets are [STL10, INVALID]"
+    value: "None"
+    short_format: "u-data-%s"
+    type: "string"
+
+  max_percent_unlabeled_data_in_batch:
+    description: "Defines the maximum percentage of unlabeled data that is allowed in a batch."
+    value: 0.5
+    short_format: "udp-%0.02f"
+    type: "float"
+
+  # model parameters
+  model:
+    description: "Select the used backbone for the model. Allowed models are [resnet34, resnet50v2]"
+    value: "resnet50v2"
+    short_format: "mod-%s"
+    type: "string"
+
+  pretrained:
+    description: "Do or do not use pretrained ImageNet weights for the model."
+    value: True
+    short_format: "pretrained%d"
+    type: "bool"
+
+  dropout:
+    description: "Defines if a dropout layer with p=dropout_percent should be used after the backbone."
+    value: True
+    short_format: "dropout%d"
+    type: "bool"
+
+  dropout_percent:
+    description: "percentage of dropout"
+    value: 0.5
+    short_format: "p%0.02f"
+    type: "float"
+
+  num_overcluster_heads:
+    description: "Defines how many overclustering heads for the output should be used. The output size is defined by overcluster_k"
+    value: 5
+    short_format: "num-over%d"
+    dest: "subheads_number"
+    type: "int"
+
+  overcluster_k:
+    description: "The number of clusters which should be used for the overclustering heads. We recommend on using about 5 times the number of clusters than classes."
+    value: 60
+    short_format: "k%d"
+    type: "int"
+
+  num_normal_heads:
+    description: "Defines how many gt subheads for the output should be used. he output size is always the gt number of classes."
+    value: 5
+    short_format: "num-normal%d"
+    dest: "subheads_gt_number"
+    type: "int"
+
+  input_size:
+    description: "Defines the input size for the network (widht x height)"
+    value: 64
+    short_format: "input-size-%d"
+    type: "int"
+
+  loading_size:
+    description: "Defines the loading size before any cropping and adjusting"
+    value: 96
+    short_format: "load-size-%d"
+    type: "int"
+
+  # restarting the model
+  restart:
+    description: "Tell the tool that you want to restart the training. The system will initialize the models with the weights of the previous run."
+    value: False
+    short_format: "restart%d"
+    type: "bool"
+
+  before_frozen:
+    description: "Use this argument if you want to restart a network which was frozen before. Otherwise the weights won't fit the model."
+    value: False
+    short_format: "before-frozen%d"
+    type: "bool"
+
+  weight_path:
+    description: "If you want to load specific weigths instead of the one of the last run use this argument. You also have to set the restart argument to activate the effect."
+    value: None
+    short_format: "weights-%s"
+    type: "string"
+
+
+  # general training parameters
+  optimizer:
+    description: "Select the used optimizer during the training process. Allowed optimizers are [sgd, adam]"
+    value: "adam"
+    short_format: "opt-%s"
+    type: "string"
+
+  frozen_epochs:
+    value: 50
+    description: "Decides the number of epochs with frozen backbone that should be used. A frozen backbone should only be used in combination with a pretrained network in order to transfer knowledge. A fine-tuning of the complete network can be achieved by using additionally normal_epochs"
+    short_format: "fep%d"
+    type: "int"
+    dest: "frozen_epoch"
+
+  normal_epochs:
+    description: "The number of epochs the network should be trained (with a unfrozen backbone. The total number of epochs is the sum of frozen-epochs and normal-epochs."
+    value: 350
+    short_format: "nep%d"
+    type: "int"
+    dest: "normal_epoch"
+
+  batch_size:
+    description: "The batch size fo the neural network during the normal epochs. The batch size should be atleast rep * overcluster k * 2-3"
+    value: 32
+    short_format: "bs%d"
+    type: "int"
+
+  frozen_batch_size:
+    description: "The batch size fo the neural network during the frozen epochs."
+    value: 32
+    short_format: "fr-bs%d"
+    type: "int"
+  lr:
+    description: "The start learning rate during the normal epochs."
+    value: 1e-4
+    short_format: "lr%0.08f"
+    type: "float"
+
+  frozen_lr:
+    description: "The start learning rate during the frozen epochs."
+    value: 0.001
+    short_format: "fr-lr%0.08f"
+    type: "float"
+
+  loss_reduction_patience:
+    description: "Defines the patience (number of epochs after which the learning rate is reduced. This occurs only if the validation loss hasn't shown any improvement during that time."
+    value: 75
+    short_format: "pat%d"
+    type: "int"
+
+  with_early_stopping:
+    description: "Train the network without early stopping. The default patience for early stopping is a third of the total epochs."
+    value: True
+    short_format: "early-stopp%d"
+    type: "bool"
+
+  score_name:
+    description: "Defines the score on which to measure the early stopping and the best weights."
+    value: "val_loss"
+    short_format: "score-%s"
+    type: "string"
+
+  use_only_train_cl_acc:
+    description: "Only plots metrics for training"
+    value: False
+    short_format: "only_train_acc%d"
+    type: "bool"
+
+  num_gpus:
+    description: "Define the number of gpus that should be used."
+    value: 1
+    short_format: "num-gpu%d"
+    type: "int"
+
+
+  # general configuration parameters
+  root_log_dir:
+    description: "The root directory for all logs and savings. The default value is defined in the file const.py"
+    value: "/data1/logs"
+    short_format: "dir%s"
+    type: "string"
+
+  workers:
+    description: " The number of workers which should be used for the data augmentation. The higher the better if the system can handle it."
+    value: 6
+    short_format: "workers%d"
+    type: "int"
+
+  train:
+    description: "Do or do not train the specified experiment"
+    value: True
+    short_format: "train%d"
+    type: "bool"
+
+  predict:
+    description: "Do or do not predict for the specified experiment"
+    value: True
+    short_format: "predict%d"
+    type: "bool"
+
+  pred_include_unlabeled:
+    description: "Include the unlabeled dataset in the prediction at the end of each epoch"
+    value: True
+    short_format: "include_unlabeled%d"
+    type: "bool"
+
+  pred_include_test:
+    description: "Include the test dataset in the prediction at the end of each epoch"
+    value: False
+    short_format: "include_test%d"
+    type: "bool"
+
+  exclude_intermediate_val:
+    description: "exclude the valdiation analysis during training, this only omits the metrics on the validation data, the overall cluster performance is still evaluated"
+    value: False
+    short_format: "exclude_inter_val%d"
+    type: "bool"
+
+  adaptive_bs:
+    description: "Use a adaptive bs for the validation and test generator, this might lead to bad used batchsizes which lead to a massive increase in runtime. watch the logs of the generators carefully. However this option should be used if you want to get reliable accuracies. Adaptive bs is only working for a rep of 1 and datapercent of 1. Normally these values are used for validation and test, bes sure not to change the hard coded parameters."
+    value: True
+    short_format: "adaptive-bs%d"
+    type: "bool"
+
+  logging_all_step:
+    description: "Defines if intermidate predictions during the  training process should be used to calculate cluster accuracies. A low value means a lot of predictions which allows humans to better observe the training process. However, each prediction interrupts the training process and therefor slows down the system. Defines the number of epochs between each usage. A value of below 0 is interpreted as a do not predict cluster accuracies. Zero is an invalid value."
+    value: 4
+    short_format: "pred_step%d"
+    dest: "cluster_prediction_step"
+    type: "int"
+
+  alternate_overcluster_max:
+    description: "Defines the number of epochs for overclustering head training"
+    value: 5
+    short_format: "alt-over%d"
+    type: "int"
+
+  alternate_gt_max:
+    description: " Defines the number of epochs for gt head training"
+    value: 5
+    short_format: "alt-normal%d"
+    type: "int"
+
+  # loss function
+  lambda_s:
+    description: "lambda value for the supervision part of the loss"
+    value: 1.0
+    short_format: "lamb-s-%0.02f"
+    type: "float"
+
+  lambda_m:
+    description: "lambda value for the mutual information part of the loss"
+    value: 0.0
+    short_format: "lamb-m-%0.02f"
+    type: "float"
+
+  lambda_t:
+    description: "lambda value for the ceinv loss part of the loss"
+    value: 1.0
+    short_format: "lamb-t-%0.02f"
+    type: "float"
+
+  # Data generator
+  sample_repetition:
+    description: "Defines how often an image should be used in each batch. This value has to divide the batch size."
+    value: 1
+    short_format: "rep%d"
+    type: "int"
+
+  shuffle:
+    description: "Shuffle or do not shuffle the training data. The validation data is never shuffeled."
+    value: True
+    short_format: "shuffle%d"
+    type: "bool"
+
+  # general augmentations
+  input:
+    description: "Define the type of input rgb and/or sobel input [rgb, sobel, sobel_rgb]"
+    value: "rgb"
+    short_format: "input-%s"
+    type: "string"
+
+  # imgaug augmentations
+  imgaug_0:
+    description: "Defines the imgaug augmentation for the first (positive input image. Allowed values are shown in multi_image_loader.py."
+    value: "train_augment_affine_cutout"
+    short_format:  "aug-0-%s"
+    type: "string"
+
+  imgaug_1:
+    description: "Defines the imgaug augmentation for the second (positive input image. Allowed values are shown in multi_image_loader.py."
+    value: "train_augment_iic"
+    short_format:  "aug-1-%s"
+    type: "string"
+
+  imgaug_2:
+    description: "Defines the imgaug augmentation for the third (negative input image. Allowed values are shown in multi_image_loader.py."
+    value: "val_crop"
+    short_format: "aug-2-%s"
+    type: "string"
