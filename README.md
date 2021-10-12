@@ -51,6 +51,7 @@ You need to define three directories for the execution with docker:
 - `LOG_ROOT`, inside a subdiretory `logs` all experimental results will be stored with regard to the given `IDs` and a time stamp
 - `SRC_ROOT` root of the this project source code
 
+The `DOCKER_IMAGE` is the above defined image.
 
 You can visualize the results with `tensorboard --logdir .` from inside the `log_dir`
 
@@ -60,17 +61,18 @@ You can visualize the results with `tensorboard --logdir .` from inside the `log
 
 
     % test container
-    docker run -it --rm -v <DATASET_ROOT>:/data-ssd -v <LOG_ROOT>:/data1   -v <SRC_ROOT>:/src -w="/src" eoc_tf14 bash
+    docker run -it --rm -v <DATASET_ROOT>:/data-ssd -v <LOG_ROOT>:/data1   -v <SRC_ROOT>:/src -w="/src" <DOCKER_IMAGE> bash
 
 
     % test pipeline running
-    docker run -it --rm -v <DATASET_ROOT>:/data-ssd -v <LOG_ROOT>:/data1   -v <SRC_ROOT>:/src -w="/src" eoc_tf14 python main.py --IDs foc experiment_name not_use_mi --dataset stl10@s1-u0.10 --unlabeled_data stl10@s1-u0.10  --frozen_batch_size 130 --batch_size 130 --overcluster_k 60 --num_gpus 1 --normal_epoch 2 --frozen_epoch 1
+    docker run -it --rm -v <DATASET_ROOT>:/data-ssd -v <LOG_ROOT>:/data1   -v <SRC_ROOT>:/src -w="/src" <DOCKER_IMAGE> python main.py --IDs foc experiment_name not_use_mi --dataset stl10@s1-u0.10 --unlabeled_data stl10@s1-u0.10  --frozen_batch_size 130 --batch_size 130 --overcluster_k 60 --num_gpus 1 --normal_epoch 2 --frozen_epoch 1
 
     % training FOC-Light
-    docker run -it --rm -v <DATASET_ROOT>:/data-ssd -v <LOG_ROOT>:/data1   -v <SRC_ROOT>:/home -w="/home" eoc_tf14 python main.py --experiment_identifiers foc experiment_name not_use_mi --dataset stl10  --frozen_batch_size 130 --batch_size 130 --overcluster_k 60 --num_gpus 1
+    docker run -it --rm -v <DATASET_ROOT>:/data-ssd -v <LOG_ROOT>:/data1   -v <SRC_ROOT>:/home -w="/home" <DOCKER_IMAGE> python main.py --experiment_identifiers foc experiment_name not_use_mi --dataset stl10  --frozen_batch_size 130 --batch_size 130 --overcluster_k 60 --num_gpus 1
     
     % training FOC (no warmup)
-    docker run -it --rm -v <DATASET_ROOT>:/data-ssd -v <LOG_ROOT>:/data1   -v <SRC_ROOT>:/home -w="/home" eoc_tf14 python main.py --experiment_identifiers foc experiment_name not_use_mi --dataset stl10  --frozen_batch_size 390 --batch_size 390 --overcluster_k 60 --num_gpus 3 --lambda_m 1 --sample_repetition 3
+    % needs multiple GPUs or very large ones (change num gpu to 1 in this case)
+    docker run -it --rm -v <DATASET_ROOT>:/data-ssd -v <LOG_ROOT>:/data1   -v <SRC_ROOT>:/home -w="/home" <DOCKER_IMAGE> python main.py --experiment_identifiers foc experiment_name not_use_mi --dataset stl10  --frozen_batch_size 390 --batch_size 390 --overcluster_k 60 --num_gpus 3 --lambda_m 1 --sample_repetition 3
     
 
 
