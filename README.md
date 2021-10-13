@@ -5,7 +5,7 @@ However, in many applications these consistent annotations can not be given due 
 We call these inconsistent label fuzzy.
 Our method Fuzzy Overclustering overclusters the data and can therefore handle these fuzzy labels better than Out-of-the-Box Semi-Supervised Methods.
 
-More details are given in https://arxiv.org/abs/2012.01768
+More details are given in the accpeted full paper at https://doi.org/10.3390/s21196661 or in the preprint https://arxiv.org/abs/2012.01768
 
 The main idea is illustrated below. The graphic and caption are taken from the original work.
 
