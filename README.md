@@ -1,11 +1,20 @@
 # Fuzzy Overclustering (FOC)
 
+## Updated version
+
+This repository is not updated. An improved algorithm (published at ECCV 2022) can be found at [https://github.com/Emprime/dc3](https://github.com/Emprime/dc3).
+If you are interest in the data, I would recommend the novel benchmark (published at NeurIPS 2022) at [https://github.com/Emprime/dcic](https://github.com/Emprime/dcic).
+
+## Original README
+
 In real-world datasets, we need consistent annotations between annotators to give a certain ground-truth label.
 However, in many applications these consistent annotations can not be given due to issues like intra- and interobserver variability.
 We call these inconsistent label fuzzy.
 Our method Fuzzy Overclustering overclusters the data and can therefore handle these fuzzy labels better than Out-of-the-Box Semi-Supervised Methods.
 
 More details are given in the accpeted full paper at https://doi.org/10.3390/s21196661 or in the preprint https://arxiv.org/abs/2012.01768
+
+The datasets can be found at [https://doi.org/10.5281/zenodo.5550918](https://doi.org/10.5281/zenodo.5550918)
 
 The main idea is illustrated below. The graphic and caption are taken from the original work.
 
